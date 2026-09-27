@@ -124,6 +124,7 @@
     .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-gold { background: var(--brand-gold-light); color: #855f13; }
+    .badge-blue { background: #e0f2fe; color: #0369a1; }
 
     /* M14 ANALYTICS PROGRESS BARS */
     .bar-wrap { margin-bottom: 18px; }
@@ -152,17 +153,17 @@
       <li class="nav-section-label">Executive Overview</li>
       <li class="nav-item active" onclick="switchTab('dashboard', this)">
         <span>Dashboard</span>
-        <span class="tag"></span>
+        <span class="tag">M2/M15</span>
       </li>
 
       <li class="nav-section-label">Love Luxe</li>
       <li class="nav-item" onclick="switchTab('history', this)">
         <span>Transaction History</span>
-        <span class="tag"></span>
+        <span class="tag">M13</span>
       </li>
       <li class="nav-item" onclick="switchTab('analytics', this)">
         <span>Sales Analytics</span>
-        <span class="tag"></span>
+        <span class="tag">M14</span>
       </li>
 
     </ul>
@@ -174,7 +175,11 @@
       <div class="page-title" id="top-title">Dashboard Overview</div>
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="text-align: right;">
+          <div style="font-size: 0.85rem; font-weight: 600;">Neil Lorence Deocareza</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Lead &bull; Modules 13–15</div>
         </div>
+        <div style="width:38px; height:38px; border-radius:50%; background:var(--brand-gold); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">D</div>
+      </div>
     </header>
 
     <div class="content-area">
@@ -245,18 +250,54 @@
 
       </section>
 
-      <!-- ================= MODULE 13: TRANSACTION HISTORY & LOOKUP ================= -->
+      <!-- ================= MODULE 13: TRANSACTION HISTORY & REVENUE ANALYTICS ================= -->
       <section id="view-history" class="view-panel">
+
+        <!-- 1. TOTAL REVENUE & FILTERED REVENUE CARDS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">Overall Total Revenue (All Transactions)</div>
+            <div class="value" id="overallRevenueVal" style="color: var(--brand-gold);">₱0.00</div>
+            <small style="color: var(--text-muted); font-size: 0.75rem;">Lifetime gross sales from all records</small>
+          </div>
+          
+          <div class="stat-card">
+            <div class="label" id="filteredRevenueLabel">Filtered Revenue</div>
+            <div class="value" id="filteredRevenueVal" style="color: #166534;">₱0.00</div>
+            <small id="filteredCountLabel" style="color: var(--text-muted); font-size: 0.75rem;">0 transactions matched</small>
+          </div>
+        </div>
+
         <div class="card">
+          <!-- 2. CONTROLS: SEARCH + PAYMENT METHOD SORT/FILTER + DATE SELECTOR -->
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
             <div>
-              <h3 style="font-size: 1.25rem;">Transaction History & Search (Module 13)</h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted);">View, search, and audit previous customer purchases</p>
+              <h3 style="font-size: 1.25rem;">Transaction Ledger & Revenue Breakdown (Module 13)</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">View, filter by payment method or date, and dynamically calculate subtotal revenues</p>
             </div>
-            <!-- Live Search Bar -->
-            <input type="text" id="searchTxInput" class="form-control" style="width: 340px;" placeholder="🔍 Search by Receipt #, Customer, or Payment..." onkeyup="filterTxHistory()">
+
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <!-- Text search -->
+              <input type="text" id="searchTxInput" class="form-control" style="width: 200px;" placeholder="🔍 Search Receipt # or Customer..." onkeyup="applyTransactionFilters()">
+
+              <!-- Payment Method Filter -->
+              <select id="txPaymentFilter" class="form-control" style="width: 160px;" onchange="applyTransactionFilters()">
+                <option value="all">💳 All Payment Methods</option>
+                <option value="Cash">Cash</option>
+                <option value="GCash">GCash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Credit Card">Credit Card</option>
+              </select>
+
+              <!-- Date Filter -->
+              <input type="date" id="txDateFilter" class="form-control" style="width: 145px;" onchange="applyTransactionFilters()">
+
+              <!-- Reset button -->
+              <button type="button" class="btn" style="padding: 10px 14px; font-size: 0.8rem; background: #64748b;" onclick="resetTxFilters()">Reset</button>
+            </div>
           </div>
 
+          <!-- TABLE -->
           <table>
             <thead>
               <tr>
@@ -269,46 +310,7 @@
               </tr>
             </thead>
             <tbody id="txHistoryBody">
-              <tr>
-                <td><strong>TRN-018</strong></td>
-                <td>Sept 17 2026</td>
-                <td>Amos Agustin</td>
-                <td>GCash</td>
-                <td><strong>₱4,500.00</strong></td>
-                <td><span class="badge badge-success">Completed</span></td>
-              </tr>
-              <tr>
-                <td><strong>TRN-016</strong></td>
-                <td>Sept 17 2026</td>
-                <td>Katrina Cruz</td>
-                <td>GCash</td>
-                <td><strong>₱1,200.00</strong></td>
-                <td><span class="badge badge-success">Completed</span></td>
-              </tr>
-              <tr>
-                <td><strong>TRN-015</strong></td>
-                <td>Sept 17 2026</td>
-                <td>Patrick Vasallo</td>
-                <td>Bank Transfer</td>
-                <td><strong>₱3,400.00</strong></td>
-                <td><span class="badge badge-success">Completed</span></td>
-              </tr>
-              <tr>
-                <td><strong>TRN-014</strong></td>
-                <td>Sept 17 2026</td>
-                <td>Mark Daniel Flores</td>
-                <td>Cash</td>
-                <td><strong>₱850.00</strong></td>
-                <td><span class="badge badge-success">Completed</span></td>
-              </tr>
-              <tr>
-                <td><strong>TRN-013</strong></td>
-                <td>Sept 17 2026</td>
-                <td>Mc Juno Sanciangco</td>
-                <td>Credit Card</td>
-                <td><strong>₱2,100.00</strong></td>
-                <td><span class="badge badge-success">Completed</span></td>
-              </tr>
+              <!-- Dynamically populated via manual loop -->
             </tbody>
           </table>
         </div>
@@ -365,12 +367,175 @@
 
   <!-- JAVASCRIPT -->
   <script>
+    // ==========================================================
+    // MANUAL ARRAY & STRING HELPERS (Strictly NO built-in array methods)
+    // ==========================================================
+
+    function arrayPush(arr, item) {
+      arr[arr.length] = item;
+    }
+
+    function containsSubstring(text, query) {
+      if (query.length === 0) return true;
+      for (let i = 0; i <= text.length - query.length; i++) {
+        let isMatch = true;
+        for (let j = 0; j < query.length; j++) {
+          if (text[i + j] !== query[j]) {
+            isMatch = false;
+            break;
+          }
+        }
+        if (isMatch) return true;
+      }
+      return false;
+    }
+
+    // ==========================================================
+    // MODULE 13: TRANSACTION DATA (Matching your original records)
+    // ==========================================================
+
+    let transactionHistory = [
+      { trn: "TRN-018", date: "2026-09-17", dateDisplay: "Sept 17, 2026", customer: "Amos Agustin", payment: "GCash", amount: 4500, status: "Completed" },
+      { trn: "TRN-016", date: "2026-09-17", dateDisplay: "Sept 17, 2026", customer: "Katrina Cruz", payment: "GCash", amount: 1200, status: "Completed" },
+      { trn: "TRN-015", date: "2026-09-17", dateDisplay: "Sept 17, 2026", customer: "Patrick Vasallo", payment: "Bank Transfer", amount: 3400, status: "Completed" },
+      { trn: "TRN-014", date: "2026-09-17", dateDisplay: "Sept 17, 2026", customer: "Mark Daniel Flores", payment: "Cash", amount: 850, status: "Completed" },
+      { trn: "TRN-013", date: "2026-09-16", dateDisplay: "Sept 16, 2026", customer: "Mc Juno Sanciangco", payment: "Credit Card", amount: 2100, status: "Completed" }
+    ];
+
+    // ==========================================================
+    // 1. CALCULATE OVERALL TOTAL REVENUE (Strict manual loop, no .reduce)
+    // ==========================================================
+
+    function calculateOverallRevenue() {
+      let masterTotal = 0;
+      for (let i = 0; i < transactionHistory.length; i++) {
+        masterTotal += transactionHistory[i].amount;
+      }
+      const overallElem = document.getElementById('overallRevenueVal');
+      if (overallElem) {
+        overallElem.innerText = `₱${masterTotal.toLocaleString()}.00`;
+      }
+    }
+
+    // ==========================================================
+    // 2. FILTER BY PAYMENT METHOD, DATE, & SEARCH (Computes Dynamic Revenue)
+    // ==========================================================
+
+    function applyTransactionFilters() {
+      const selectedPayment = document.getElementById('txPaymentFilter').value;
+      const selectedDate = document.getElementById('txDateFilter').value;
+      const query = document.getElementById('searchTxInput').value.toLowerCase().trim();
+
+      let matchedList = [];
+      let dynamicRevenue = 0;
+
+      for (let i = 0; i < transactionHistory.length; i++) {
+        const item = transactionHistory[i];
+
+        // 1. Payment Method Filter
+        if (selectedPayment !== 'all' && item.payment !== selectedPayment) {
+          continue;
+        }
+
+        // 2. Date Filter
+        if (selectedDate !== '' && item.date !== selectedDate) {
+          continue;
+        }
+
+        // 3. Search Filter (matches Receipt # or Customer Name)
+        const combined = (item.trn + " " + item.customer + " " + item.payment + " " + item.dateDisplay).toLowerCase();
+        if (!containsSubstring(combined, query)) {
+          continue;
+        }
+
+        // Passes all criteria: manually push and accumulate total
+        arrayPush(matchedList, item);
+        dynamicRevenue += item.amount;
+      }
+
+      // Update Filtered Revenue Display
+      const filteredValElem = document.getElementById('filteredRevenueVal');
+      const filteredLabelElem = document.getElementById('filteredRevenueLabel');
+      const filteredCountElem = document.getElementById('filteredCountLabel');
+
+      if (filteredValElem) {
+        filteredValElem.innerText = `₱${dynamicRevenue.toLocaleString()}.00`;
+      }
+
+      // Dynamic Title based on what the user chose
+      if (filteredLabelElem) {
+        if (selectedPayment !== 'all' && selectedDate !== '') {
+          filteredLabelElem.innerText = `${selectedPayment} Revenue on ${selectedDate}`;
+        } else if (selectedPayment !== 'all') {
+          filteredLabelElem.innerText = `Total ${selectedPayment} Revenue`;
+        } else if (selectedDate !== '') {
+          filteredLabelElem.innerText = `Total Revenue on ${selectedDate}`;
+        } else {
+          filteredLabelElem.innerText = 'Filtered Selection Revenue';
+        }
+      }
+
+      if (filteredCountElem) {
+        filteredCountElem.innerText = `${matchedList.length} of ${transactionHistory.length} transactions matched`;
+      }
+
+      renderTxTable(matchedList);
+    }
+
+    // ==========================================================
+    // 3. RENDER TABLE (Manual loop)
+    // ==========================================================
+
+    function renderTxTable(list) {
+      const tbody = document.getElementById('txHistoryBody');
+      if (!tbody) return;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No transactions found matching your filter selection.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        let badgeClass = 'badge-gold';
+        if (item.payment === 'Cash') badgeClass = 'badge-success';
+        if (item.payment === 'Credit Card') badgeClass = 'badge-blue';
+
+        html += `
+          <tr>
+            <td><strong>${item.trn}</strong></td>
+            <td>${item.dateDisplay}</td>
+            <td>${item.customer}</td>
+            <td><span class="badge ${badgeClass}">${item.payment}</span></td>
+            <td><strong>₱${item.amount.toLocaleString()}.00</strong></td>
+            <td><span class="badge badge-success">${item.status}</span></td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = html;
+    }
+
+    // Reset all filters back to default
+    function resetTxFilters() {
+      document.getElementById('txPaymentFilter').value = 'all';
+      document.getElementById('txDateFilter').value = '';
+      document.getElementById('searchTxInput').value = '';
+      applyTransactionFilters();
+    }
+
     // Tab Switching Logic
     function switchTab(viewId, element) {
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      const navItems = document.querySelectorAll('.nav-item');
+      for (let i = 0; i < navItems.length; i++) {
+        navItems[i].classList.remove('active');
+      }
       element.classList.add('active');
 
-      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active-view'));
+      const panels = document.querySelectorAll('.view-panel');
+      for (let i = 0; i < panels.length; i++) {
+        panels[i].classList.remove('active-view');
+      }
       const target = document.getElementById(`view-${viewId}`);
       if (target) {
         target.classList.add('active-view');
@@ -379,15 +544,9 @@
       document.getElementById('top-title').innerText = element.querySelector('span').innerText;
     }
 
-    // Module 13: Live Search / Filter
-    function filterTxHistory() {
-      const filter = document.getElementById('searchTxInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#txHistoryBody tr');
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
-      });
-    }
+    // INITIAL SETUP ON PAGE LOAD
+    calculateOverallRevenue();
+    applyTransactionFilters();
   </script>
 </body>
 </html>
